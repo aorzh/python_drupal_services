@@ -28,6 +28,13 @@ but without a session is currently not supported.
 
 import xmlrpclib, time, random, string, hmac, hashlib, pprint
 
+class CookieTransport(xmlrpclib.Transport):
+    def send_content(self, connection, request_body):
+        if hasattr(self,'cookiename'):
+            print "sending " + self.cookiename
+            connection.putheader('Cookie', "%s=%s" % (self.cookiename, self.cookievalue))
+        return xmlrpclib.Transport.send_content(self, connection, request_body)
+                              
 class BasicServices(xmlrpclib.Server):
     """Drupal Services without keys or sessions, not very secure."""
     def __init__(self, url):
@@ -56,14 +63,11 @@ class BasicServices(xmlrpclib.Server):
 class ServicesSessid(BasicServices):
     """Drupal Services with sessid."""
     def __init__(self, url, username, password):
-        BasicServices.__init__(self, url)
-        self.session = self.user.login(self.sessid, username, password)
-
-    def _build_eval_list(self, method_name, args):
-        return ([self.sessid] + 
-                map(None, args)) # Python refuses to concatenate list and tuple
-    
-
+        transport = CookieTransport()        
+        xmlrpclib.Server.__init__(self, url, transport)
+        sessioninfo = self.user.login(username, password)
+        transport.cookiename = sessioninfo['session_name']
+        transport.cookievalue = sessioninfo['sessid']
 
 class ServicesSessidKey(ServicesSessid):
     """Drupal Services with sessid and keys."""
