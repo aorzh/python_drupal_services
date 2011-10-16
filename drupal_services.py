@@ -59,7 +59,7 @@ class ServicesSessid(BasicServices):
         BasicServices.__init__(self, url)
         self.session = self.user.login(self.sessid, username, password)
 
-    def _build_eval_list(self, args):
+    def _build_eval_list(self, method_name, args):
         return ([self.sessid] + 
                 map(None, args)) # Python refuses to concatenate list and tuple
     
@@ -146,8 +146,8 @@ class DrupalServices:
     
     def getInfo(self, method_name):
         print method_name
-        print self.server.system.methodHelp(fName)
-        print self.server.system.methodSignature(fName)
+        print self.server.system.methodHelp(method_name)
+        print self.server.system.methodSignature(method_name)
 
 
 
