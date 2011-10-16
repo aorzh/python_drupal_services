@@ -42,7 +42,7 @@ class BasicServices(xmlrpclib.Server):
         self.sessid = self.connection['sessid']
 
     def call(self, method_name, *args):
-        return getattr(self, method_name)(self._build_eval_list(method_name, args))
+        return getattr(self, method_name)(*self._build_eval_list(method_name, args))
                            
     def _build_eval_list(self, method_name, args):
         # method_name is used in ServicesSessidKey
@@ -65,6 +65,7 @@ class ServicesSessid(BasicServices):
         transport = CookieTransport()        
         xmlrpclib.Server.__init__(self, url, transport)
         sessioninfo = self.user.login(username, password)
+        self.sessioninfo = sessioninfo
         transport.cookiename = sessioninfo['session_name']
         transport.cookievalue = sessioninfo['sessid']
 
