@@ -31,7 +31,6 @@ import xmlrpclib, time, random, string, hmac, hashlib, pprint
 class CookieTransport(xmlrpclib.Transport):
     def send_content(self, connection, request_body):
         if hasattr(self,'cookiename'):
-            print "sending " + self.cookiename
             connection.putheader('Cookie', "%s=%s" % (self.cookiename, self.cookievalue))
         return xmlrpclib.Transport.send_content(self, connection, request_body)
                               
