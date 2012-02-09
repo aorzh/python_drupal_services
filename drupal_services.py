@@ -37,7 +37,7 @@ class CookieTransport(xmlrpclib.Transport):
 class BasicServices(xmlrpclib.Server):
     """Drupal Services without keys or sessions, not very secure."""
     def __init__(self, url):
-        xmlrpclib.Server.__init__(self, url)
+        xmlrpclib.Server.__init__(self, url, allow_none=True)
         self.connection = self.system.connect()
         self.sessid = self.connection['sessid']
 
@@ -63,7 +63,7 @@ class ServicesSessid(BasicServices):
     """Drupal Services with sessid."""
     def __init__(self, url, username, password):
         transport = CookieTransport()        
-        xmlrpclib.Server.__init__(self, url, transport)
+        xmlrpclib.Server.__init__(self, url, transport, allow_none=True)
         sessioninfo = self.user.login(username, password)
         self.sessioninfo = sessioninfo
         transport.cookiename = sessioninfo['session_name']
